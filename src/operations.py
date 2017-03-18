@@ -1,3 +1,6 @@
+from collections import namedtuple
+
+
 def conjunction(*args):
     return all(args)
 
@@ -14,3 +17,8 @@ operations = {
     'conjunction': conjunction,
     'disjunction': disjunction
 }
+
+
+Operation = namedtuple('Operation', ['func', 'in_count'])
+
+negation = Operation(operations['negation'])
