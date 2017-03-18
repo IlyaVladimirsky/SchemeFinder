@@ -19,6 +19,9 @@ operations = {
 }
 
 
-Operation = namedtuple('Operation', ['func', 'in_count'])
+class Operation:
+    def __init__(self, func, in_count):
+        self.func = operations[func]
+        self.in_count = in_count
 
-negation = Operation(operations['negation'])
+negation = Operation('negation', 1)
