@@ -1,11 +1,16 @@
-def conj(*args):
-    return 0 in args
+def conjunction(*args):
+    return all(args)
 
 
-def disj(*args):
-    return 1 in args
+def disjunction(*args):
+    return any(args)
+
+
+def negation(*args):
+    return not args
 
 operations = {
-    '&': conj,
-    '∨': disj
+    'negation': negation,
+    'conjunction': conjunction,
+    'disjunction': disjunction
 }
