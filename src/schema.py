@@ -8,6 +8,25 @@ class Node:
         self.children = children or []
         self.mark = mark
 
+    def __getitem__(self, index):
+        def getitem(node, i):
+            if not self.mark == i:
+                return self
+            else:
+                try:
+                    return next(node for node in node.children if node.mark == i)
+                except StopIteration:
+                    return None
+
+        result = getitem(self, index)
+        if not result:
+            raise IndexError
+
+        return result
+
+    def add_child(self, node):
+        self.children.append(node)
+
     def max_mark(self):
         if not self.children:
             return self.mark
@@ -24,3 +43,6 @@ class Schema:
         root_copy = deepcopy(self.root)
 
         return Schema(root_copy)
+
+    def add_node(self, node, mark):
+        self.root[mark].add_child(node)
