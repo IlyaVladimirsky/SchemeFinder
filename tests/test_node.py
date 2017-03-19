@@ -18,6 +18,10 @@ class TestNode(unittest.TestCase):
         self.assertTrue(self.root in self.root, 'root not in root')
         self.assertTrue(self.node_2 in self.root, 'node_2 not in root')
 
+    def test_iter(self):
+        self.node_2.children[0] = self.node_1
+        self.assertTrue([self.root, self.node_1, self.node_2, self.node_1] == list(self.root))
+
     def test_indices(self):
         self.assertTrue(self.root[1] is self.node_1)
 

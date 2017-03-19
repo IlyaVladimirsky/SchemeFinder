@@ -35,10 +35,14 @@ class Node:
         return result
 
     def __contains__(self, node):
-        if node is self:
-            return True
-        else:
-            return any(node in child for child in self.children if child)
+        return any(node == n for n in self)
+
+    def __iter__(self):
+        yield self
+
+        for child_iter in (iter(child) for child in self.children if child):
+            for c in child_iter:
+                yield c
 
     def add_child(self, node):
         for i, e in enumerate(self.children):
@@ -51,10 +55,7 @@ class Node:
         raise ExcessChildException
 
     def max_mark(self):
-        if not self.children:
-            return self.mark
-        else:
-            return max(node.max_mark() for node in self.children)
+        return max(n.mark for n in self)
 
 
 class Schema:
