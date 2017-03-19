@@ -14,6 +14,14 @@ class AlreadyContainsNodeException(NodeException):
     pass
 
 
+class SchemaException(Exception):
+    pass
+
+
+class WrongInputCountException(SchemaException):
+    pass
+
+
 class Node:
     def __init__(self, operation, parent=None, children=None, mark=0):
         self.function = types.MethodType(operation.func, self)
@@ -91,3 +99,7 @@ class Schema:
 
     def free_wares_count(self):
         return sum(1 for node in self for child in node.children if not child)
+
+    def calculate_schema(self, input_array):
+        if self.free_wares_count() != len(input_array):
+            raise WrongInputCountException

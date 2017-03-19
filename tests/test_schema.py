@@ -2,7 +2,7 @@ import unittest
 from copy import copy
 
 from src.operations import Operation
-from src.schema import Node, Schema
+from src.schema import Node, Schema, WrongInputCountException
 
 
 class TestSchema(unittest.TestCase):
@@ -25,3 +25,7 @@ class TestSchema(unittest.TestCase):
 
     def test_free_wares(self):
         self.assertTrue(self.schema.free_wares_count() == 4)
+
+    def test_calculate_schema(self):
+        with self.assertRaises(WrongInputCountException):
+            self.schema.calculate_schema([])
