@@ -22,3 +22,6 @@ class TestSchema(unittest.TestCase):
         self.assertTrue(self.root not in schema_copy)
         self.assertTrue(self.node_1 not in schema_copy)
         self.assertTrue(self.node_2 not in schema_copy)
+
+    def test_free_wares(self):
+        self.assertTrue(self.schema.free_wares_count() == 4)

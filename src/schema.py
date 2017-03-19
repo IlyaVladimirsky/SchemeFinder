@@ -88,3 +88,6 @@ class Schema:
         self.counter += 1
 
         self.root[parent_node.mark].add_child(child_node)
+
+    def free_wares_count(self):
+        return sum(1 for node in self for child in node.children if not child)
