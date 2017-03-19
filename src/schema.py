@@ -11,15 +11,16 @@ class Node:
 
     def __getitem__(self, index):
         def getnode(node, i):
-            if not self.mark == i:
-                return self
+            if node.mark == i:
+                return node
             else:
                 try:
-                    return next(getnode(node, i) for node in node.children if node.mark == i)
+                    return next(getnode(child, i) for child in node.children if child)
                 except StopIteration:
                     return None
 
         result = getnode(self, index)
+
         if not result:
             raise IndexError
 

@@ -1,5 +1,4 @@
 import types
-from collections import namedtuple
 
 
 def conjunction(self, *args):
