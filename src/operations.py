@@ -1,15 +1,17 @@
+import types
 from collections import namedtuple
 
 
-def conjunction(*args):
+def conjunction(self, *args):
     return all(args)
 
 
-def disjunction(*args):
+def disjunction(self, *args):
     return any(args)
 
 
-def negation(*args):
+def negation(self, *args):
+    print(len(args))
     return not args
 
 operations = {
@@ -21,7 +23,7 @@ operations = {
 
 class Operation:
     def __init__(self, func, in_count):
-        self.func = operations[func]
+        self.func = types.MethodType(operations[func], self)
         self.in_count = in_count
 
-negation = Operation('negation', 1)
+neg = Operation('negation', 1)
