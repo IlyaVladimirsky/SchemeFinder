@@ -2,7 +2,7 @@ import types
 from copy import deepcopy
 
 
-class NodeException(BaseException):
+class NodeException(Exception):
     pass
 
 
@@ -35,7 +35,7 @@ class Node:
                 return node
             else:
                 try:
-                    return next(getnode(child, i) for child in node.children if child)
+                    return next(getnode(child, i) for child in node.children if isinstance(child, Node))
                 except StopIteration:
                     return None
 
@@ -50,11 +50,11 @@ class Node:
         return any(node == n for n in self)
 
     def __iter__(self):
-        yield self
-
-        for child_iter in (iter(child) for child in self.children if child):
+        for child_iter in (iter(child) for child in self.children if isinstance(child, Node)):
             for c in child_iter:
                 yield c
+
+        yield self
 
     def add_child(self, node):
         if node in self:
@@ -100,6 +100,11 @@ class Schema:
     def free_wares_count(self):
         return sum(1 for node in self for child in node.children if not child)
 
-    def calculate_schema(self, input_array):
-        if self.free_wares_count() != len(input_array):
+    def connect_vars(self, bool_vars):
+        if self.free_wares_count() != len(bool_vars):
             raise WrongInputCountException
+
+        for node in self:
+            for i, child in enumerate(node.children):
+                if not isinstance(child, Node):
+                    node.children[i] = bool_vars.pop(0)

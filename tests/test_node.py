@@ -20,7 +20,7 @@ class TestNode(unittest.TestCase):
 
     def test_iter(self):
         self.node_2.children[0] = self.node_1
-        self.assertTrue([self.root, self.node_1, self.node_2, self.node_1] == list(self.root))
+        self.assertTrue([self.node_1, self.node_1, self.node_2, self.root] == list(self.root))
 
     def test_indices(self):
         self.assertTrue(self.root[1] is self.node_1)
@@ -33,8 +33,8 @@ class TestNode(unittest.TestCase):
             self.root.add_child(self.node_1)
 
         with self.assertRaises(ExcessChildException):
-            self.root.add_child(copy(self.node_1))
+            self.root.add_child(deepcopy(self.node_1))
 
-        copied_node = copy(self.node_2)
+        copied_node = deepcopy(self.node_2)
         self.node_1.add_child(copied_node)
         self.assertTrue(copied_node in self.node_1)
