@@ -2,6 +2,14 @@ import types
 from copy import deepcopy
 
 
+class NodeException(BaseException):
+    pass
+
+
+class ExcessChildException(NodeException):
+    pass
+
+
 class Node:
     def __init__(self, operation, parent=None, children=None, mark=0):
         self.function = types.MethodType(operation.func, self)
@@ -33,7 +41,14 @@ class Node:
             return any(node in child for child in self.children if child)
 
     def add_child(self, node):
-        self.children.append(node)
+        for i, e in enumerate(self.children):
+            if not e:
+                self.children.pop(i)
+                self.children.insert(i, node)
+
+                return
+
+        raise ExcessChildException
 
     def max_mark(self):
         if not self.children:

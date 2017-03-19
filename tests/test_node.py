@@ -1,7 +1,8 @@
 import unittest
+from copy import deepcopy
 
 from src.operations import Operation
-from src.schema import Node
+from src.schema import Node, ExcessChildException
 
 
 class TestNode(unittest.TestCase):
@@ -22,3 +23,10 @@ class TestNode(unittest.TestCase):
 
         with self.assertRaises(IndexError):
             self.root[-1], self.root[3]
+
+    def test_add_child(self):
+        with self.assertRaises(ExcessChildException):
+            self.root.add_child(self.node_1)
+
+        self.node_1.add_child(self.node_2)
+        self.assertTrue(self.node_2 in self.node_1)
