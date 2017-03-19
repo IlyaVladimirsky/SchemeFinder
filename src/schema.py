@@ -48,6 +48,8 @@ class Node:
         for i, e in enumerate(self.children):
             if not e:
                 self.children.pop(i)
+
+                node.parent = self
                 self.children.insert(i, node)
 
                 return
@@ -71,5 +73,11 @@ class Schema:
 
         return Schema(root_copy)
 
-    def add_node(self, node, mark):
-        self.root[mark].add_child(node)
+    def __iter__(self):
+        return iter(self.root)
+
+    def add_node(self, parent_node, child_node):
+        child_node.mark = self.counter
+        self.counter += 1
+
+        self.root[parent_node.mark].add_child(child_node)
