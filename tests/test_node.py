@@ -1,8 +1,8 @@
 import unittest
-from copy import deepcopy
+from copy import deepcopy, copy
 
 from src.operations import Operation
-from src.schema import Node, ExcessChildException
+from src.schema import Node, ExcessChildException, AlreadyContainsNodeException
 
 
 class TestNode(unittest.TestCase):
@@ -29,8 +29,12 @@ class TestNode(unittest.TestCase):
             self.root[-1], self.root[3]
 
     def test_add_child(self):
-        with self.assertRaises(ExcessChildException):
+        with self.assertRaises(AlreadyContainsNodeException):
             self.root.add_child(self.node_1)
 
-        self.node_1.add_child(self.node_2)
-        self.assertTrue(self.node_2 in self.node_1)
+        with self.assertRaises(ExcessChildException):
+            self.root.add_child(copy(self.node_1))
+
+        copied_node = copy(self.node_2)
+        self.node_1.add_child(copied_node)
+        self.assertTrue(copied_node in self.node_1)

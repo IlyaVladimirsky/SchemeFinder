@@ -19,8 +19,6 @@ class TestSchema(unittest.TestCase):
     def test_copy(self):
         schema_copy = copy(self.schema)
 
-        print(list(self.root))
-        print(list(schema_copy))
         self.assertTrue(self.root not in schema_copy)
         self.assertTrue(self.node_1 not in schema_copy)
         self.assertTrue(self.node_2 not in schema_copy)

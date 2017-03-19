@@ -10,6 +10,10 @@ class ExcessChildException(NodeException):
     pass
 
 
+class AlreadyContainsNodeException(NodeException):
+    pass
+
+
 class Node:
     def __init__(self, operation, parent=None, children=None, mark=0):
         self.function = types.MethodType(operation.func, self)
@@ -45,6 +49,9 @@ class Node:
                 yield c
 
     def add_child(self, node):
+        if node in self:
+            raise AlreadyContainsNodeException
+
         for i, e in enumerate(self.children):
             if not e:
                 self.children.pop(i)
