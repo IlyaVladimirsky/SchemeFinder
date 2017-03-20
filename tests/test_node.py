@@ -38,3 +38,6 @@ class TestNode(unittest.TestCase):
         copied_node = deepcopy(self.node_2)
         self.node_1.add_child(copied_node)
         self.assertTrue(copied_node in self.node_1)
+
+    def test_free_nodes(self):
+        self.assertTrue(list(self.root.free_nodes()) == [self.node_1, self.node_2])

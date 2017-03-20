@@ -93,6 +93,11 @@ class Node:
     def max_mark(self):
         return max(n.mark for n in self)
 
+    def free_nodes(self):
+        for node in self:
+            if any(not isinstance(child, Node) for child in node.children):
+                yield node
+
 
 class Schema:
     def __init__(self, node):
@@ -130,3 +135,7 @@ class Schema:
 
     def calculate(self):
         return self.root.calculate()
+
+    def get_derivatives(self, basis):
+        for base_node in basis:
+            pass
