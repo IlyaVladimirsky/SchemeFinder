@@ -1,5 +1,5 @@
 import unittest
-from copy import deepcopy, copy
+from copy import deepcopy
 
 from src.operations import Operation
 from src.schema import Node, ExcessChildException, AlreadyContainsNodeException

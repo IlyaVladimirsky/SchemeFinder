@@ -1,6 +1,8 @@
 import types
 from copy import deepcopy
 
+from src.bool_var import BoolVar
+
 
 class NodeException(Exception):
     pass
@@ -11,6 +13,10 @@ class ExcessChildException(NodeException):
 
 
 class AlreadyContainsNodeException(NodeException):
+    pass
+
+
+class WrongCalculatedTypesException(NodeException):
     pass
 
 
@@ -71,6 +77,19 @@ class Node:
 
         raise ExcessChildException
 
+    def calculate(self):
+        bool_args = []
+
+        for child in self.children:
+            if isinstance(child, Node):
+                bool_args.append(child.calculate())
+            elif isinstance(child, BoolVar):
+                bool_args.append(child.value)
+            else:
+                raise WrongCalculatedTypesException
+
+        return self.function(*bool_args)
+
     def max_mark(self):
         return max(n.mark for n in self)
 
@@ -108,3 +127,6 @@ class Schema:
             for i, child in enumerate(node.children):
                 if not isinstance(child, Node):
                     node.children[i] = bool_vars.pop(0)
+
+    def calculate(self):
+        return self.root.calculate()

@@ -3,7 +3,7 @@ from copy import copy, deepcopy
 
 from src.bool_var import BoolVar
 from src.operations import Operation
-from src.schema import Node, Schema, WrongInputCountException
+from src.schema import Node, Schema, WrongInputCountException, WrongCalculatedTypesException
 
 
 class TestSchema(unittest.TestCase):
@@ -43,3 +43,18 @@ class TestSchema(unittest.TestCase):
         self.assertTrue(self.node_1.children == [self.x1, self.x2])
         self.assertTrue(copied_node.children == [self.x3, self.x1])
         self.assertTrue(self.node_2.children[1] == self.x2)
+
+    def test_calculate(self):
+        with self.assertRaises(WrongCalculatedTypesException):
+            self.schema.calculate()
+
+        self.schema.connect_vars([self.x1, self.x2, self.x3, self.x1])
+
+        self.x1.value, self.x2.value, self.x3.value = True, True, True
+        self.assertTrue(self.schema.calculate())
+
+        self.x1.value, self.x2.value, self.x3.value = True, True, False
+        self.assertFalse(self.schema.calculate())
+
+        self.x1.value, self.x2.value, self.x3.value = True, False, True
+        self.assertFalse(self.schema.calculate())
