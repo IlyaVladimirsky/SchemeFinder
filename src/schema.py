@@ -1,7 +1,7 @@
 import types
 from copy import deepcopy
 
-from src.bool_var import BoolVar
+from src.wire import Wire
 
 
 class NodeException(Exception):
@@ -29,31 +29,26 @@ class WrongInputCountException(SchemaException):
 
 
 class Node:
-    def __init__(self, operation, parent=None, children=None, mark=0):
+    @property
+    def free_wires(self):
+        for node in self:
+            for child in node.children:
+                if not isinstance(child, Node):
+                    yield child
+
+    def __init__(self, operation, parent=None, children=None):
         self.function = types.MethodType(operation.func, self)
         self.parent = parent
-        self.children = children or [None for _ in range(operation.in_count)]
-        self.mark = mark
+        self.children = children or [Wire() for _ in range(operation.in_count)]
 
     def __getitem__(self, index):
-        def getnode(node, i):
-            if node.mark == i:
-                return node
-            else:
-                try:
-                    return next(getnode(child, i) for child in node.children if isinstance(child, Node))
-                except StopIteration:
-                    return None
-
-        result = getnode(self, index)
-
-        if not result:
-            raise IndexError
-
-        return result
+        for free_wire in self.free_wires:
+            if free_wire.label == index:
+                return free_wire
+        raise IndexError
 
     def __contains__(self, node):
-        return any(node == n for n in self)
+        return any(node is n for n in self)
 
     def __iter__(self):
         for child_iter in (iter(child) for child in self.children if isinstance(child, Node)):
@@ -67,7 +62,7 @@ class Node:
             raise AlreadyContainsNodeException
 
         for i, e in enumerate(self.children):
-            if not e:
+            if not isinstance(e, Node):
                 self.children.pop(i)
 
                 node.parent = self
@@ -83,26 +78,22 @@ class Node:
         for child in self.children:
             if isinstance(child, Node):
                 bool_args.append(child.calculate())
-            elif isinstance(child, BoolVar):
-                bool_args.append(child.value)
-            else:
-                raise WrongCalculatedTypesException
+            elif isinstance(child, Wire):
+                if child.value is None:
+                    raise WrongCalculatedTypesException
+
+                bool_args.append(child.value.value)
 
         return self.function(*bool_args)
 
-    def max_mark(self):
-        return max(n.mark for n in self)
-
-    def free_nodes(self):
-        for node in self:
-            if any(not isinstance(child, Node) for child in node.children):
-                yield node
+    def max_label(self):
+        return max(wire.label for wire in self.free_wires)
 
 
 class Schema:
     def __init__(self, node):
         self.root = node
-        self.counter = node.max_mark() + 1
+        self.counter = node.max_label() + 1
 
     def __contains__(self, node):
         return node in self.root
@@ -116,26 +107,26 @@ class Schema:
         return iter(self.root)
 
     def add_node(self, parent_node, child_node):
-        child_node.mark = self.counter
-        self.counter += 1
-
-        self.root[parent_node.mark].add_child(child_node)
+        parent_node.add_child(child_node)
 
     def free_wares_count(self):
-        return sum(1 for node in self for child in node.children if not child)
+        return sum(1 for _ in self.root.free_wires)
 
     def connect_vars(self, bool_vars):
         if self.free_wares_count() != len(bool_vars):
             raise WrongInputCountException
 
-        for node in self:
-            for i, child in enumerate(node.children):
-                if not isinstance(child, Node):
-                    node.children[i] = bool_vars.pop(0)
+        for wire in self.root.free_wires:
+            wire.value = bool_vars.pop(0)
 
     def calculate(self):
         return self.root.calculate()
 
-    def get_derivatives(self, basis):
-        for base_node in basis:
-            pass
+    # def get_derivatives(self, basis):
+    #     for base_node in basis:
+    #         for node in self:
+    #             for i, child in enumerate(node.children):
+    #                 if not isinstance(child, Node):
+    #                     node.children[i] = deepcopy(base_node)
+    #                     derivative = copy(self)
+    #                     node.children[i] = None
