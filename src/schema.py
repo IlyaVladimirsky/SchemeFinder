@@ -1,5 +1,5 @@
 import types
-from copy import deepcopy
+from copy import deepcopy, copy
 
 from src.bool_var import BoolVar
 
@@ -108,11 +108,18 @@ class Schema:
     def calculate(self):
         return self.root.calculate()
 
-    # def get_derivatives(self, basis):
-    #     for base_node in basis:
-    #         for node in self:
-    #             for i, child in enumerate(node.children):
-    #                 if not isinstance(child, Node):
-    #                     node.children[i] = deepcopy(base_node)
-    #                     derivative = copy(self)
-    #                     node.children[i] = None
+    def get_derivatives(self, basis):
+        for base_node in basis:
+            used_nodes = []
+
+            for i, node in self.root.free_wires():
+                if node in used_nodes:
+                    continue
+
+                node.children[i] = deepcopy(base_node)
+                derivative = copy(self)
+                node.children[i] = None
+
+                used_nodes.append(node)
+
+                yield derivative

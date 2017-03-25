@@ -35,4 +35,5 @@ class TestNode(unittest.TestCase):
 
     def test_free_wires(self):
         self.assertEqual(sum(1 for i, node in self.root.free_wires()), 4)
+
         self.assertTrue(all(node in [self.node_1, self.node_2] for i, node in self.root.free_wires()))

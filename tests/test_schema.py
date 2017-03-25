@@ -8,10 +8,12 @@ from src.schema import Node, Schema, WrongInputCountException, WrongCalculatedTy
 
 class TestSchema(unittest.TestCase):
     def setUp(self):
-        conj = Operation('conjunction', 2)
-        self.root = Node(conj)
-        self.node_1 = Node(conj)
-        self.node_2 = Node(conj)
+        self.conj = Operation('conjunction', 2)
+        self.disj = Operation('disjunction', 2)
+
+        self.root = Node(self.conj)
+        self.node_1 = Node(self.conj)
+        self.node_2 = Node(self.conj)
 
         self.schema = Schema(self.root)
         self.root.add_child(self.node_1)
@@ -58,3 +60,8 @@ class TestSchema(unittest.TestCase):
 
         self.x1.value, self.x2.value, self.x3.value = True, False, True
         self.assertFalse(self.schema.calculate())
+
+    def test_derivatives(self):
+        basis = [self.conj, self.disj]
+
+        self.assertEqual(sum(1 for _ in self.schema.get_derivatives(basis)), 4)
