@@ -1,4 +1,4 @@
-from schemedb import SchemeDB
+from src.schemedb import SchemeDB
 
 
 class SchemeFinder:
@@ -12,18 +12,13 @@ class SchemeFinder:
 
     def find(self):
         # fetch schemes of specific length from db
-        schemes = self.db.fetch_schemes()
-        schemes = [
-            '({}&{})&{}',
-            '({}&{})∨{}',
-            '({}∨{})∨{}',
-            '({}∨{})&{}'
-        ]
+        # schemes = self.db.fetch_schemes()
+        schema = Schema
         #  need a function to find all derivative schemes for every parent scheme
         derivative_schemes = []
         for scheme in schemes:
             # 1: find all ins of the scheme
-            var_combs = self.get_variable_combinations()
+            var_combs = self.get_all_variable_combinations()
             binary_combs = self.get_all_binary_combinations()
 
             for base_element in self.basis:

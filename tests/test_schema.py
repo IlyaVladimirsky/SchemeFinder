@@ -4,6 +4,7 @@ from copy import copy, deepcopy
 from src.bool_var import BoolVar
 from src.operations import Operation
 from src.schema import Node, Schema, WrongInputCountException, WrongCalculatedTypesException
+from src.wire import Wire
 
 
 class TestSchema(unittest.TestCase):
@@ -40,9 +41,9 @@ class TestSchema(unittest.TestCase):
 
         self.schema.connect_vars([self.x1, self.x2, self.x3, self.x1, self.x2])
 
-        self.assertTrue(self.node_1.children == [self.x1, self.x2])
-        self.assertTrue(copied_node.children == [self.x3, self.x1])
-        self.assertTrue(self.node_2.children[1] == self.x2)
+        self.assertTrue(self.node_1.children == [Wire(self.x1), Wire(self.x2)])
+        self.assertTrue(copied_node.children == [Wire(self.x3), Wire(self.x1)])
+        self.assertTrue(self.node_2.children[1] == Wire(self.x2))
 
     def test_calculate(self):
         with self.assertRaises(WrongCalculatedTypesException):
