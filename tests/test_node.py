@@ -3,7 +3,6 @@ from copy import deepcopy
 
 from src.operations import Operation
 from src.schema import Node, ExcessChildException, AlreadyContainsNodeException
-from src.wire import Wire
 
 
 class TestNode(unittest.TestCase):
@@ -23,15 +22,6 @@ class TestNode(unittest.TestCase):
         self.node_2.children[0] = self.node_1
         self.assertTrue([self.node_1, self.node_1, self.node_2, self.root] == list(self.root))
 
-    def test_indices(self):
-        self.node_1.children[1] = Wire(value=True, label=5)
-
-        self.assertTrue(self.root[5].value)
-        self.assertIsNone(self.root[-1].value)
-
-        with self.assertRaises(IndexError):
-            self.root[-5]
-
     def test_add_child(self):
         with self.assertRaises(AlreadyContainsNodeException):
             self.root.add_child(self.node_1)
@@ -44,4 +34,5 @@ class TestNode(unittest.TestCase):
         self.assertTrue(copied_node in self.node_1)
 
     def test_free_wires(self):
-        self.assertTrue(all(not wire.value for wire in self.root.free_wires))
+        self.assertEqual(sum(1 for i, node in self.root.free_wires()), 4)
+        self.assertTrue(all(node in [self.node_1, self.node_2] for i, node in self.root.free_wires()))

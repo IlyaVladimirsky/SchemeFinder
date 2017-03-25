@@ -29,11 +29,10 @@ class WrongInputCountException(SchemaException):
 
 
 class Node:
-    def __init__(self, operation, parent=None, children=None, mark=0):
+    def __init__(self, operation, parent=None, children=None):
         self.function = types.MethodType(operation.func, self)
         self.parent = parent
         self.children = children or [None for _ in range(operation.in_count)]
-        self.mark = mark
 
     def __contains__(self, node):
         return any(node is n for n in self)
@@ -50,7 +49,7 @@ class Node:
             raise AlreadyContainsNodeException
 
         for i, e in enumerate(self.children):
-            if not e:
+            if not isinstance(e, Node):
                 self.children.pop(i)
 
                 node.parent = self
@@ -73,19 +72,20 @@ class Node:
 
         return self.function(*bool_args)
 
-    def max_mark(self):
-        return max(n.mark for n in self)
-
-    def free_nodes(self):
+    def free_wires(self):
         for node in self:
-            if any(not isinstance(child, Node) for child in node.children):
-                yield node
+            for i, child in enumerate(node.children):
+                if not isinstance(child, Node):
+                    yield i, node
 
 
 class Schema:
+    @property
+    def free_wares_count(self):
+        return sum(1 for _, _ in self.root.free_wires())
+
     def __init__(self, node):
         self.root = node
-        self.counter = node.max_mark() + 1
 
     def __contains__(self, node):
         return node in self.root
@@ -98,23 +98,12 @@ class Schema:
     def __iter__(self):
         return iter(self.root)
 
-    def add_node(self, parent_node, child_node):
-        child_node.mark = self.counter
-        self.counter += 1
-
-        self.root[parent_node.mark].add_child(child_node)
-
-    def free_wares_count(self):
-        return sum(1 for node in self for child in node.children if not child)
-
     def connect_vars(self, bool_vars):
-        if self.free_wares_count() != len(bool_vars):
+        if self.free_wares_count != len(bool_vars):
             raise WrongInputCountException
 
-        for node in self:
-            for i, child in enumerate(node.children):
-                if not isinstance(child, Node):
-                    node.children[i] = bool_vars.pop(0)
+        for i, node in self.root.free_wires():
+            node.children[i] = bool_vars.pop(0)
 
     def calculate(self):
         return self.root.calculate()

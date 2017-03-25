@@ -4,7 +4,6 @@ from copy import copy, deepcopy
 from src.bool_var import BoolVar
 from src.operations import Operation
 from src.schema import Node, Schema, WrongInputCountException, WrongCalculatedTypesException
-from src.wire import Wire
 
 
 class TestSchema(unittest.TestCase):
@@ -15,8 +14,8 @@ class TestSchema(unittest.TestCase):
         self.node_2 = Node(conj)
 
         self.schema = Schema(self.root)
-        self.schema.add_node(self.root, self.node_1)
-        self.schema.add_node(self.root, self.node_2)
+        self.root.add_child(self.node_1)
+        self.root.add_child(self.node_2)
 
         self.x1 = BoolVar(1)
         self.x2 = BoolVar(2)
@@ -30,7 +29,7 @@ class TestSchema(unittest.TestCase):
         self.assertTrue(self.node_2 not in schema_copy)
 
     def test_free_wares(self):
-        self.assertTrue(self.schema.free_wares_count() == 4)
+        self.assertTrue(self.schema.free_wares_count == 4)
 
     def test_connect_vars(self):
         with self.assertRaises(WrongInputCountException):
@@ -41,9 +40,9 @@ class TestSchema(unittest.TestCase):
 
         self.schema.connect_vars([self.x1, self.x2, self.x3, self.x1, self.x2])
 
-        self.assertTrue(self.node_1.children == [Wire(self.x1), Wire(self.x2)])
-        self.assertTrue(copied_node.children == [Wire(self.x3), Wire(self.x1)])
-        self.assertTrue(self.node_2.children[1] == Wire(self.x2))
+        self.assertTrue(self.node_1.children == [self.x1, self.x2])
+        self.assertTrue(copied_node.children == [self.x3, self.x1])
+        self.assertTrue(self.node_2.children[1] == self.x2)
 
     def test_calculate(self):
         with self.assertRaises(WrongCalculatedTypesException):
