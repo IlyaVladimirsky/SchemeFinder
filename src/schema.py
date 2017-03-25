@@ -35,25 +35,8 @@ class Node:
         self.children = children or [None for _ in range(operation.in_count)]
         self.mark = mark
 
-    def __getitem__(self, index):
-        def getnode(node, i):
-            if node.mark == i:
-                return node
-            else:
-                try:
-                    return next(getnode(child, i) for child in node.children if isinstance(child, Node))
-                except StopIteration:
-                    return None
-
-        result = getnode(self, index)
-
-        if not result:
-            raise IndexError
-
-        return result
-
     def __contains__(self, node):
-        return any(node == n for n in self)
+        return any(node is n for n in self)
 
     def __iter__(self):
         for child_iter in (iter(child) for child in self.children if isinstance(child, Node)):
@@ -136,6 +119,11 @@ class Schema:
     def calculate(self):
         return self.root.calculate()
 
-    def get_derivatives(self, basis):
-        for base_node in basis:
-            pass
+    # def get_derivatives(self, basis):
+    #     for base_node in basis:
+    #         for node in self:
+    #             for i, child in enumerate(node.children):
+    #                 if not isinstance(child, Node):
+    #                     node.children[i] = deepcopy(base_node)
+    #                     derivative = copy(self)
+    #                     node.children[i] = None
