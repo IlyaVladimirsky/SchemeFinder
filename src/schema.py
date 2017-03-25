@@ -136,6 +136,11 @@ class Schema:
     def calculate(self):
         return self.root.calculate()
 
-    def get_derivatives(self, basis):
-        for base_node in basis:
-            pass
+    # def get_derivatives(self, basis):
+    #     for base_node in basis:
+    #         for node in self:
+    #             for i, child in enumerate(node.children):
+    #                 if not isinstance(child, Node):
+    #                     node.children[i] = deepcopy(base_node)
+    #                     derivative = copy(self)
+    #                     node.children[i] = None
