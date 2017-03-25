@@ -2,16 +2,15 @@ import types
 
 
 def conjunction(self, *args):
-    return all(args)
+    return all(args[1:])
 
 
 def disjunction(self, *args):
-    return any(args)
+    return any(args[1:])
 
 
 def negation(self, *args):
-    print(len(args))
-    return not args
+    return not args[1]
 
 operations = {
     'negation': negation,

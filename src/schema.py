@@ -44,6 +44,12 @@ class Node:
 
         yield self
 
+    def __str__(self):
+        return self.function.__name__ + str(len(self.children))
+
+    def __repr__(self):
+        return str(self)
+
     def add_child(self, node):
         if node in self:
             raise AlreadyContainsNodeException
@@ -98,12 +104,16 @@ class Schema:
     def __iter__(self):
         return iter(self.root)
 
-    def connect_vars(self, bool_vars):
-        if self.free_wares_count != len(bool_vars):
+    def __repr__(self):
+        return str(self.root)
+
+    def connect_vars(self, varset):
+        if self.free_wares_count != len(varset):
             raise WrongInputCountException
 
+        varset = list(varset)
         for i, node in self.root.free_wires():
-            node.children[i] = bool_vars.pop(0)
+            node.children[i] = varset.pop(0)
 
     def calculate(self):
         return self.root.calculate()

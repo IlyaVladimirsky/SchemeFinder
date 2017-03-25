@@ -1,41 +1,50 @@
-from src.schemedb import SchemeDB
+import itertools
+
+from src.bool_var import BoolVar
+from src.schema import Schema
+
+BOOL_COMBINATIONS = {}
 
 
 class SchemeFinder:
-    def __init__(self, var_count, is_polar, wf, basis):
-        self.db = SchemeDB
+    def __init__(self, var_count, unipolar, wf, basis):
+        self.bool_vars = [BoolVar(i + 1) for i in range(var_count)]
+        self.datasets = list(itertools.product(range(2), repeat=var_count))
 
         self.var_count = var_count
-        self.is_polar = is_polar
+        self.is_polar = unipolar
         self.wf = wf
         self.basis = basis
 
     def find(self):
-        # fetch schemes of specific length from db
-        # schemes = self.db.fetch_schemes()
-        schema = Schema
-        #  need a function to find all derivative schemes for every parent scheme
-        derivative_schemes = []
-        for scheme in schemes:
-            # 1: find all ins of the scheme
-            var_combs = self.get_all_variable_combinations()
-            binary_combs = self.get_all_binary_combinations()
+        current_schemes = []
 
-            for base_element in self.basis:
-                builded_with_base = self.find_derivatives(base_element)
-                derivative_schemes += builded_with_base
+        for base_node in self.basis:
+            current_schemes.append(Schema(base_node))
 
-                for var_comb in var_combs:  # reduce var combs
-                    # calc w(f)
-                    for bin_comb in binary_combs:
-                        pass
+        while True:
+            for scheme in current_schemes:
+                ins_count = scheme.free_wares_count
+                varset = BOOL_COMBINATIONS.get(
+                    str(ins_count),
+                    list(itertools.product(self.bool_vars, repeat=ins_count))  # == var^ins
+                )
 
-    def find_derivatives(self, parents, build_elem):
-        #
-        return []
+                for comb in varset:
+                    scheme.connect_vars(comb)
 
-    def get_all_variable_combinations(self):
-        return []
+                    wf = []
+                    for dataset in self.datasets:
+                        for data_unit, var in zip(dataset, self.bool_vars):
+                            var.value = data_unit
 
-    def get_all_binary_combinations(self, length):
-        return []
+                        wf.append(scheme.calculate())
+
+                    if self.wf == wf:
+                        return scheme
+
+            current_schemes = [
+                new
+                for curr_schema in current_schemes
+                for new in curr_schema.get_derivatives(self.basis)
+            ]
