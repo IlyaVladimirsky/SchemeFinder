@@ -17,13 +17,15 @@ class SchemeFinder:
         self.basis = basis
 
     def find(self):
-        current_schemes = []
+        current_schemas = []
 
         for base_node in self.basis:
-            current_schemes.append(Schema(base_node))
+            current_schemas.append(Schema(base_node))
 
+        checked_count = 0
+        level = 1
         while True:
-            for scheme in current_schemes:
+            for scheme in current_schemas:
                 ins_count = scheme.free_wares_count
                 varset = BOOL_COMBINATIONS.get(
                     str(ins_count),
@@ -43,8 +45,9 @@ class SchemeFinder:
                     if self.wf == wf:
                         return scheme
 
-            current_schemes = [
-                new
-                for curr_schema in current_schemes
-                for new in curr_schema.get_derivatives(self.basis)
-            ]
+                checked_count += 1
+                if checked_count % 200 == 0:
+                    print('checked schemas = %d, level = %d' % (checked_count, level))
+
+            current_schemas = [new for curr_schema in current_schemas for new in curr_schema.get_derivatives(self.basis)]
+            level += 1

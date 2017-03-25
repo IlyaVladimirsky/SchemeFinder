@@ -45,7 +45,7 @@ class Node:
         yield self
 
     def __str__(self):
-        return self.function.__name__ + str(len(self.children))
+        return (self.function.__name__[0] + str(len(self.children))).join('(' + str(c) + ')' for c in self.children)
 
     def __repr__(self):
         return str(self)
