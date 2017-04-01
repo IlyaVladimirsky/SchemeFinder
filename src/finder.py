@@ -1,4 +1,5 @@
 import itertools
+from datetime import datetime
 
 from src.bool_var import BoolVar
 from src.schema import Schema
@@ -25,6 +26,8 @@ class SchemeFinder:
         checked_count = 0
         level = 1
         while True:
+            print('current schemas length = %d' % len(current_schemas))
+
             for scheme in current_schemas:
                 ins_count = scheme.free_wares_count
                 varset = BOOL_COMBINATIONS.get(
@@ -47,7 +50,7 @@ class SchemeFinder:
 
                 checked_count += 1
                 if checked_count % 200 == 0:
-                    print('checked schemas = %d, level = %d' % (checked_count, level))
+                    print('checked schemas = %d, level = %d, time = %s' % (checked_count, level, datetime.now()))
 
             current_schemas = [new for curr_schema in current_schemas for new in curr_schema.get_derivatives(self.basis)]
             level += 1
