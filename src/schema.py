@@ -111,8 +111,8 @@ class Schema:
         return str(self.root)
 
     def connect_vars(self, varset):
-        if self.free_wares_count != len(varset):
-            raise WrongInputCountException
+        # if self.free_wares_count != len(varset):
+        #     raise WrongInputCountException
 
         varset = list(varset)
         for i, node in self.root.free_wires():
