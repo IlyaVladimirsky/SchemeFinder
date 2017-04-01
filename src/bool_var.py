@@ -5,5 +5,8 @@ class BoolVar:
         self.var_id = var_id
         self.value = value
 
+    def __copy__(self):
+        return self
+
     def __repr__(self):
         return 'x' + str(self.var_id)

@@ -1,7 +1,4 @@
-import types
-from copy import deepcopy, copy
-
-from src.bool_var import BoolVar
+from copy import copy
 
 
 class NodeException(Exception):
@@ -31,13 +28,21 @@ class WrongInputCountException(SchemaException):
 class Node:
     is_node = True
 
-    def __init__(self, operation, parent=None, children=None):
-        self.function = operation.func
+    def __init__(self, function, in_count, parent=None, children=None):
+        self.function = function
         self.parent = parent
-        self.children = children or [None for _ in range(operation.in_count)]
+        self.children = children or [None for _ in range(in_count)]
 
     def __contains__(self, node):
         return any(node is n for n in self)
+
+    def __copy__(self):
+        return Node(
+            function=self.function,
+            in_count=-1,  # not needed as children passed
+            parent=self.parent,
+            children=[copy(chi) for chi in self.children]
+        )
 
     def __iter__(self):
         for child_iter in (iter(child) for child in self.children if isinstance(child, Node)):
@@ -100,7 +105,7 @@ class Schema:
         return node in self.root
 
     def __copy__(self):
-        root_copy = deepcopy(self.root)
+        root_copy = copy(self.root)
 
         return Schema(root_copy)
 
@@ -129,7 +134,7 @@ class Schema:
                 if node in used_nodes:
                     continue
 
-                node.children[i] = deepcopy(base_node)
+                node.children[i] = copy(base_node)
                 derivative = copy(self)
                 node.children[i] = None
 
