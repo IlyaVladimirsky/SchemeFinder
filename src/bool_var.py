@@ -1,4 +1,6 @@
 class BoolVar:
+    is_node = False
+
     def __init__(self, var_id, value=None):
         self.var_id = var_id
         self.value = value

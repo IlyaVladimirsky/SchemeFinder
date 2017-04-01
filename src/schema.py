@@ -29,6 +29,8 @@ class WrongInputCountException(SchemaException):
 
 
 class Node:
+    is_node = True
+
     def __init__(self, operation, parent=None, children=None):
         self.function = operation.func
         self.parent = parent
@@ -72,7 +74,7 @@ class Node:
         bool_args = []
 
         for child in self.children:
-            if isinstance(child, Node):
+            if child.is_node:
                 bool_args.append(child.calculate())
             else:
                 bool_args.append(child.value)
