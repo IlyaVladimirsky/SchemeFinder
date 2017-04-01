@@ -30,7 +30,7 @@ class WrongInputCountException(SchemaException):
 
 class Node:
     def __init__(self, operation, parent=None, children=None):
-        self.function = types.MethodType(operation.func, self)
+        self.function = operation.func
         self.parent = parent
         self.children = children or [None for _ in range(operation.in_count)]
 
@@ -74,10 +74,8 @@ class Node:
         for child in self.children:
             if isinstance(child, Node):
                 bool_args.append(child.calculate())
-            elif isinstance(child, BoolVar):
-                bool_args.append(child.value)
             else:
-                raise WrongCalculatedTypesException
+                bool_args.append(child.value)
 
         return self.function(*bool_args)
 
