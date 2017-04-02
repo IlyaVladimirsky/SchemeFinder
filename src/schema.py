@@ -1,5 +1,9 @@
 from copy import copy
 
+import itertools
+
+BOOL_COMBINATIONS = {}
+
 
 class NodeException(Exception):
     pass
@@ -126,18 +130,21 @@ class Schema:
     def calculate(self):
         return self.root.calculate()
 
-    def get_derivatives(self, basis):
+    def get_derivatives(self, basis, boolvars):
         for base_node in basis:
-            used_nodes = []
+            ins_count = len(base_node.children)
+            varsets = BOOL_COMBINATIONS.get(
+                str(ins_count),
+                list(itertools.combinations(boolvars, ins_count))  # == var^ins
+            )
 
             for i, node in self.root.free_wires():
-                if node in used_nodes:
-                    continue
+                for varset in varsets:
+                    previous = node.children[i]
 
-                node.children[i] = copy(base_node)
-                derivative = copy(self)
-                node.children[i] = None
+                    node.children[i] = base_node
+                    node.children[i].children = list(varset)
 
-                used_nodes.append(node)
+                    yield copy(self)
 
-                yield derivative
+                    node.children[i] = previous

@@ -62,6 +62,11 @@ class TestSchema(unittest.TestCase):
         self.assertFalse(self.schema.calculate())
 
     def test_derivatives(self):
-        basis = [self.conj, self.disj]
+        basis = [
+            Node(self.conj.func, self.conj.in_count),
+            Node(self.disj.func, self.disj.in_count)
+        ]
+        self.node_1.children = [self.x1, self.x2]
 
-        self.assertEqual(sum(1 for _ in self.schema.get_derivatives(basis)), 4)
+        derivatives = Schema(self.node_1).get_derivatives(basis, [self.x1, self.x2, self.x3])
+        self.assertEqual(sum(1 for _ in derivatives), 12)
