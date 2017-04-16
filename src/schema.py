@@ -1,5 +1,10 @@
 from copy import copy
 
+import re
+
+from src.bool_var import BoolVar
+from src.operations import operations
+
 
 class NodeException(Exception):
     pass
@@ -28,6 +33,44 @@ class WrongInputCountException(SchemaException):
 class Node:
     is_node = True
 
+    @classmethod
+    def init(cls, node_str, boolvars):
+        created_nodes = {}
+        subnode_pattern = re.compile('(\(|{)x*\d(\)|})con2(\(|{)x*\d(\)|})')
+        subnode_counter = 0
+        subnode_matches = list(subnode_pattern.finditer(node_str))
+
+        while len(subnode_matches):
+            for match in subnode_matches:
+                subnode_str = match.group()
+
+                func_pattern = re.compile('(\)|})(\w{3}\d(\(|{))+')
+                str_op = func_pattern.search(subnode_str).group()[1:-1]
+                operation = next(v for k, v in operations.items() if k.startswith(str_op[:3]))
+
+                children = subnode_str.split(str_op)
+                in_count = len(children)
+                node = Node(operation, in_count)
+
+                for j, c in enumerate(children):
+                    var = re.search('x\d', c)
+                    if var:
+                        chi = next(x for x in boolvars if x == BoolVar(int(var.group()[1])))
+                    else:
+                        subnode_numb = str(re.search('\d', c).group())
+                        chi = copy(created_nodes[subnode_numb])
+
+                    node.children[j] = Node(operations['negation'], 1, children=[chi]) if c.startswith('{') else chi
+
+                created_nodes[str(subnode_counter)] = node
+                node_str = node_str.replace(subnode_str, str(subnode_counter))
+
+                subnode_counter += 1
+
+            subnode_matches = list(subnode_pattern.finditer(node_str))
+
+        return node
+
     def __init__(self, function, in_count, parent=None, children=None):
         self.function = function
         self.parent = parent
@@ -44,6 +87,9 @@ class Node:
             children=[copy(chi) for chi in self.children]
         )
 
+    def __eq__(self, other):
+        return self.function == other.function and len(self.children) == len(self.children)
+
     def __iter__(self):
         for child_iter in (iter(child) for child in self.children if isinstance(child, Node)):
             for c in child_iter:
@@ -53,9 +99,13 @@ class Node:
 
     def __str__(self):
         return \
-            (self.function.__name__[0] + str(len(self.children))).join('(' + str(c) + ')' for c in self.children) \
-            if self.function.__name__ != 'negation' \
-            else '{' + str(self.children[0]) + '}'
+            (self.function.__name__[:3] + str(len(self.children))) \
+                .join(
+                    '(' + str(c) + ')'
+                    if not c.is_node or c.function.__name__ != 'negation'
+                    else '{' + str(c.children[0]) + '}'
+                    for c in self.children
+                )
 
     def __repr__(self):
         return str(self)
@@ -94,6 +144,10 @@ class Node:
 
 
 class Schema:
+    @classmethod
+    def init(cls, str_schema, boolvars):
+        return Schema(Node.init(str_schema, boolvars))
+
     @property
     def free_wares_count(self):
         return sum(1 for _, _ in self.root.free_wires())

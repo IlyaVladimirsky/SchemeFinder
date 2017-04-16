@@ -10,6 +10,7 @@ class TestSchema(unittest.TestCase):
     def setUp(self):
         self.conj = Operation('conjunction', 2)
         self.disj = Operation('disjunction', 2)
+        self.neg = Operation('negation', 1)
 
         self.root = Node(self.conj.func, self.conj.in_count)
         self.node_1 = Node(self.conj.func, self.conj.in_count)
@@ -64,4 +65,4 @@ class TestSchema(unittest.TestCase):
     def test_derivatives(self):
         basis = [self.conj, self.disj]
 
-        self.assertEqual(sum(1 for _ in self.schema.get_derivatives(basis)), 4)
+        self.assertEqual(sum(1 for _ in self.schema.get_derivatives(basis)), 2)
