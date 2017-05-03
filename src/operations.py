@@ -12,10 +12,15 @@ def disjunction(self, *args):
 def negation(self, *args):
     return not args[0]
 
+
+def mod(self, *args):
+    return sum(args) % 2
+
 operations = {
     'negation': negation,
     'conjunction': conjunction,
-    'disjunction': disjunction
+    'disjunction': disjunction,
+    'mod': mod
 }
 
 

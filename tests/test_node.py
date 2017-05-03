@@ -24,7 +24,7 @@ class TestNode(unittest.TestCase):
         self.assertTrue(self.node_2 in self.root, 'node_2 not in root')
 
     def test_eq(self):
-        self.assertTrue(self.root == self.node_1)
+        self.assertTrue(self.root in [self.node_1])
 
     def test_copy(self):
         self.node_1.children[0] = self.x1
@@ -61,6 +61,6 @@ class TestNode(unittest.TestCase):
         self.assertTrue(all(node in [self.node_1, self.node_2] for i, node in self.root.free_wires()))
 
     def test_create_node_from_str(self):
-        created = Node.init('(x2)con2(((x1)con2(x2))con2({x2}con2(x3)))', [self.x1, self.x2, self.x3])
+        created = Node.init('(x2)con(((x1)dis(x2))con({x2}con(x3)))', [self.x1, self.x2, self.x3])
 
-        self.assertEqual(str(created), '(x2)con2(((x1)con2(x2))con2({x2}con2(x3)))')
+        self.assertEqual(str(created), '(x2)con(((x1)dis(x2))con({x2}con(x3)))')

@@ -36,7 +36,7 @@ class Node:
     @classmethod
     def init(cls, node_str, boolvars):
         created_nodes = {}
-        subnode_pattern = re.compile('(\(|{)x*\d(\)|})con2(\(|{)x*\d(\)|})')
+        subnode_pattern = re.compile('(\(|{)x*\d(\)|})\w{3}(\(|{)x*\d(\)|})')
         subnode_counter = 0
         subnode_matches = list(subnode_pattern.finditer(node_str))
 
@@ -44,7 +44,7 @@ class Node:
             for match in subnode_matches:
                 subnode_str = match.group()
 
-                func_pattern = re.compile('(\)|})(\w{3}\d(\(|{))+')
+                func_pattern = re.compile('(\)|})(\w{3}(\(|{))+')
                 str_op = func_pattern.search(subnode_str).group()[1:-1]
                 operation = next(v for k, v in operations.items() if k.startswith(str_op[:3]))
 
@@ -99,11 +99,11 @@ class Node:
 
     def __str__(self):
         return \
-            (self.function.__name__[:3] + str(len(self.children))) \
+            (self.function.__name__[:3]) \
                 .join(
-                    '(' + str(c) + ')'
-                    if not c.is_node or c.function.__name__ != 'negation'
-                    else '{' + str(c.children[0]) + '}'
+                    '{' + str(self.children[0]) + '}'
+                    if self.is_node and self.function.__name__ == 'negation'
+                    else str(c) if c.is_node and c.function.__name__ == 'negation' else '(' + str(c) + ')'
                     for c in self.children
                 )
 
@@ -185,7 +185,7 @@ class Schema:
             used_nodes = []
 
             for i, node in self.root.free_wires():
-                if node in used_nodes:
+                if any(node is used for used in used_nodes):
                     continue
 
                 node.children[i] = copy(base_node)

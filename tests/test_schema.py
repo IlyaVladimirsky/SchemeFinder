@@ -65,4 +65,4 @@ class TestSchema(unittest.TestCase):
     def test_derivatives(self):
         basis = [self.conj, self.disj]
 
-        self.assertEqual(sum(1 for _ in self.schema.get_derivatives(basis)), 2)
+        self.assertEqual(sum(1 for _ in self.schema.get_derivatives(basis)), 4)
