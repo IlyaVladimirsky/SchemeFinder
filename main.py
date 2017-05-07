@@ -35,7 +35,7 @@ class FinderGUI:
 
         var_label = Label(self.input_frame, text='var number: ')
         self.var_box = Combobox(self.input_frame, values=('3', '4'))
-        self.var_box.set('3')
+        self.var_box.set('4')
         var_label.grid(row=2, column=0)
         self.var_box.grid(row=2, column=1)
 
@@ -65,7 +65,7 @@ class FinderGUI:
         neg = Operation('negation', 1)
 
         basis = [
-            # Node(mod.func, mod.in_count),
+            Node(mod.func, mod.in_count),
             Node(conj.func, conj.in_count),
             Node(disj.func, disj.in_count),
             Node(neg.func, neg.in_count),
