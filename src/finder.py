@@ -17,7 +17,7 @@ class SchemeFinder:
         self.bool_vars = [BoolVar(i + 1) for i in range(var_count)]
         self.datasets = list(itertools.product(range(2), repeat=var_count))
 
-        self.var_count = var_count
+        self._var_count = var_count
         self.is_polar = unipolar
         self.wf = wf
         self.basis = basis
@@ -30,6 +30,16 @@ class SchemeFinder:
         self.result_filename = None
         self.state_filename = None
         self.all_minimal_file = None
+
+    @property
+    def var_count(self):
+        return self._var_count
+
+    @var_count.setter
+    def var_count(self, c):
+        self.bool_vars = [BoolVar(i + 1) for i in range(c)]
+        self.datasets = list(itertools.product(range(2), repeat=c))
+        self._var_count = c
 
     def save_state(self):
         with open(self.state_filename, 'w') as sf:
@@ -102,16 +112,27 @@ class SchemeFinder:
                             wfs[wf] = cp_schema
                             schema_wfs.append(json.dumps({wf: str(cp_schema), 'length': level}) + '\n')
 
-                            # if self.wf == wf:
-                            #     self.output['text'] = str(scheme)
-                            #     return
-                                # print(scheme)
+                            if self.wf == wf:
+                                self.output['text'] = 'Минимальная схема для функции с w(f) = %s найдена:\n' % wf + str(scheme)
+
+                                return scheme
 
                     if len(wfs) != previous_wfs_count:
                         self.all_minimal_file.writelines(schema_wfs)
                         # print(wfs[wf], wfs)
                         print('checked schemas = %d, level = %d, time = %s, wfs = %d' % (checked_number, level, datetime.now(), len(wfs)))
-                        self.output['text'] = 'checked schemas = %d, level = %d, time = %s, wfs = %d' % (checked_number, level, datetime.now(), len(wfs))
+
+                        self.output['text'] = '''Всего проверено схем: {checked}
+Проверено схем длины {level}: {checked_on_level} из {total_on_level}
+Найдено минимальных схем: {min_found} из {total}
+                                            '''.format(
+                            checked=checked_number,
+                            level=level,
+                            checked_on_level=i,
+                            total_on_level=len(current_schemas),
+                            min_found=len(wfs),
+                            total=2 ** (2 ** len(self.bool_vars))
+                        )
 
                     previous_wfs_count = len(wfs)
 
@@ -120,7 +141,18 @@ class SchemeFinder:
                     self.checked_number = checked_number
                     # print(current_schemas[i-2000:i])
                     print('checked schemas = %d, level = %d, time = %s, wfs = %d' % (checked_number, level, datetime.now(), len(wfs)))
-                    self.output['text'] = 'checked schemas = %d, level = %d, time = %s, wfs = %d' % (checked_number, level, datetime.now(), len(wfs))
+
+                    self.output['text'] = '''Всего проверено схем: {checked}
+Проверено схем длины {level}: {checked_on_level} из {total_on_level}
+Найдено минимальных схем: {min_found} из {total}
+                    '''.format(
+                        checked=checked_number,
+                        level=level,
+                        checked_on_level=i,
+                        total_on_level=len(current_schemas),
+                        min_found=len(wfs),
+                        total=2 ** (2 ** len(self.bool_vars))
+                    )
 
             current_schemas = [new for curr_schema in current_schemas for new in curr_schema.get_derivatives(self.basis)]
             level += 1

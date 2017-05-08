@@ -23,7 +23,7 @@ class FinderGUI:
 
         wf_label = Label(self.input_frame, text='w(f): ')
         self.wf_input = Entry(self.input_frame, width=50, textvariable=self.wf_text_var)
-        self.wf_text_var.set('01100011')
+        self.wf_text_var.set('00000000')
         wf_label.grid(row=0, column=0)
         self.wf_input.grid(row=0, column=1)
 
@@ -64,17 +64,19 @@ class FinderGUI:
         mod = Operation('mod', 2)
         neg = Operation('negation', 1)
 
-        basis = [
-            Node(mod.func, mod.in_count),
+        classic_basis = [
             Node(conj.func, conj.in_count),
             Node(disj.func, disj.in_count),
             Node(neg.func, neg.in_count),
         ]
-        # if self.basis_box.get() == 'K2 + M2':
-        #     basis.append()
+
+        self.basises = {
+            'K2': classic_basis,
+            'K2 + M2': classic_basis + [Node(mod.func, mod.in_count)]
+        }
 
         self.finder = SchemeFinder(
-            basis=basis,
+            basis=classic_basis,
             unipolar=True,
             var_count=int(self.var_box.get()),
             wf=self.wf_input.get(),
@@ -112,6 +114,7 @@ class FinderGUI:
             self.finder.find()
 
         self.finder.var_count = int(self.var_box.get())
+        self.finder.basis = self.basises[self.basis_box.get()]
         self.finder.wf = self.wf_input.get()
 
         self.working_thread = threading.Thread(target=worker, daemon=True)
