@@ -73,6 +73,11 @@ class SchemeFinder:
 
         wfs = self.load_wfs()
 
+        if self.wf in wfs:
+            self.output['text'] = 'Минимальная схема для функции с w(f) = %s найдена:\n' % self.wf + wfs[self.wf]
+
+            return wfs[self.wf]
+
         current_schemas = []
         for base_node in self.basis:
             current_schemas.append(Schema(base_node))
