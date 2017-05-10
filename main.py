@@ -18,7 +18,7 @@ class FinderGUI:
         self.output_frame = Frame(master)
 
         master.title("Schema finder")
-        master.geometry('{}x{}'.format(900, 500))
+        master.geometry('{}x{}'.format(1000, 500))
         master.resizable(width=False, height=False)
 
         wf_label = Label(self.input_frame, text='w(f): ')
@@ -33,16 +33,16 @@ class FinderGUI:
         basis_label.grid(row=1, column=0)
         self.basis_box.grid(row=1, column=1)
 
-        var_label = Label(self.input_frame, text='var number: ')
+        var_label = Label(self.input_frame, text='количество переменных: ')
         self.var_box = Combobox(self.input_frame, values=('3', '4'))
         self.var_box.set('4')
         var_label.grid(row=2, column=0)
         self.var_box.grid(row=2, column=1)
 
-        self.resume_button = Button(self.input_frame, text="resume", command=self.resume)
-        self.pause_button = Button(self.input_frame, text="pause", command=self.pause)
-        self.close_button = Button(self.input_frame, text="Close", command=self.on_close)
-        self.find_button = Button(self.input_frame, text="find", command=self.find_click)
+        self.resume_button = Button(self.input_frame, text="далее", command=self.resume)
+        self.pause_button = Button(self.input_frame, text="пауза", command=self.pause)
+        self.close_button = Button(self.input_frame, text="закрыть", command=self.on_close)
+        self.find_button = Button(self.input_frame, text="поиск", command=self.find_click)
 
         self.output_label = Label(self.output_frame, height=20, text='', justify=LEFT, anchor='nw', relief=RIDGE, width=80)
         self.output_label.grid(row=0, sticky='nw')
