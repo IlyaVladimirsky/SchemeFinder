@@ -45,6 +45,8 @@ class FinderGUI:
         self.find_button = Button(self.input_frame, text="поиск", command=self.find_click)
 
         self.output_label = Label(self.output_frame, height=20, text='', justify=LEFT, anchor='nw', relief=RIDGE, width=80)
+        self.output_label['text'] = 'Задайте необходимые параметры и нажмите кнопку поиск, чтобы найти минимальную ' \
+                                    'схему,\nсоответсвующую функции.'
         self.output_label.grid(row=0, sticky='nw')
 
         self.resume_button.grid(row=1, column=3, padx=20)
